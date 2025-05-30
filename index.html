@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フルオンチェーンNFTオークション＆投票サービス</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>フルオンチェーンNFTオークション＆投票サービス</h1>
+        <div class="wallet-container">
+            <button id="connect-wallet" class="btn">ウォレット接続</button>
+            <div id="wallet-info" class="hidden">
+                <span id="wallet-address">未接続</span>
+                <span id="wallet-balance">0 ETH</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="auction-section" class="section">
+            <h2>本日のオークション</h2>
+            <div class="auction-container">
+                <div class="nft-preview">
+                    <div class="nft-image-container">
+                        <div class="nft-image" id="current-nft">
+                            <!-- NFTのSVG画像がここに表示されます -->
+                            <svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="300" height="300" fill="#f0f0f0" />
+                                <text x="150" y="150" font-family="Arial" font-size="24" text-anchor="middle" fill="#333">NFT #1</text>
+                                <circle cx="150" cy="150" r="100" fill="none" stroke="#333" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="nft-info">
+                        <h3 id="nft-title">NFT #1</h3>
+                        <p id="nft-description">今日のユニークNFT</p>
+                    </div>
+                </div>
+                <div class="auction-info">
+                    <div class="auction-status">
+                        <p>現在の最高入札額: <span id="highest-bid">0.1 ETH</span></p>
+                        <p>最高入札者: <span id="highest-bidder">0x1234...5678</span></p>
+                        <p>オークション終了まで: <span id="auction-time-left">12:34:56</span></p>
+                    </div>
+                    <div class="bid-form">
+                        <input type="number" id="bid-amount" min="0.01" step="0.01" placeholder="入札額（ETH）">
+                        <button id="place-bid" class="btn">入札する</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="voting-section" class="section">
+            <h2>投票システム</h2>
+            <div class="voting-container">
+                <div class="voting-tabs">
+                    <button class="tab-btn active" data-tab="active-votes">進行中の投票</button>
+                    <button class="tab-btn" data-tab="past-votes">過去の投票</button>
+                    <button class="tab-btn" data-tab="create-vote">新規投票作成</button>
+                </div>
+                
+                <div class="tab-content" id="active-votes">
+                    <div class="vote-list">
+                        <!-- 進行中の投票リスト -->
+                        <div class="vote-item">
+                            <h3>次回のNFTテーマは？</h3>
+                            <div class="vote-options">
+                                <div class="vote-option">
+                                    <label>
+                                        <input type="radio" name="vote-1" value="option1">
+                                        <span>宇宙</span>
+                                    </label>
+                                    <div class="vote-progress">
+                                        <div class="progress-bar" style="width: 65%"></div>
+                                        <span>65%</span>
+                                    </div>
+                                </div>
+                                <div class="vote-option">
+                                    <label>
+                                        <input type="radio" name="vote-1" value="option2">
+                                        <span>海洋</span>
+                                    </label>
+                                    <div class="vote-progress">
+                                        <div class="progress-bar" style="width: 35%"></div>
+                                        <span>35%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn vote-submit">投票する</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content hidden" id="past-votes">
+                    <div class="vote-list">
+                        <!-- 過去の投票リスト -->
+                        <div class="vote-item completed">
+                            <h3>トレジャリー資金の使途は？</h3>
+                            <div class="vote-options">
+                                <div class="vote-option">
+                                    <span>開発者報酬</span>
+                                    <div class="vote-progress">
+                                        <div class="progress-bar" style="width: 45%"></div>
+                                        <span>45%</span>
+                                    </div>
+                                </div>
+                                <div class="vote-option">
+                                    <span>マーケティング</span>
+                                    <div class="vote-progress">
+                                        <div class="progress-bar" style="width: 30%"></div>
+                                        <span>30%</span>
+                                    </div>
+                                </div>
+                                <div class="vote-option">
+                                    <span>流動性提供</span>
+                                    <div class="vote-progress">
+                                        <div class="progress-bar" style="width: 25%"></div>
+                                        <span>25%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vote-result">
+                                <p>結果: 開発者報酬に決定</p>
+                                <p>投票終了: 2025/5/25</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content hidden" id="create-vote">
+                    <form id="new-vote-form">
+                        <div class="form-group">
+                            <label for="vote-title">投票タイトル</label>
+                            <input type="text" id="vote-title" required placeholder="例: 次回のNFTテーマは？">
+                        </div>
+                        <div class="form-group">
+                            <label>選択肢</label>
+                            <div id="vote-options-container">
+                                <div class="vote-option-input">
+                                    <input type="text" class="vote-option-text" required placeholder="選択肢1">
+                                    <button type="button" class="remove-option">削除</button>
+                                </div>
+                                <div class="vote-option-input">
+                                    <input type="text" class="vote-option-text" required placeholder="選択肢2">
+                                    <button type="button" class="remove-option">削除</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-option" class="btn-secondary">選択肢を追加</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="vote-duration">投票期間（日）</label>
+                            <input type="number" id="vote-duration" min="1" max="30" value="7" required>
+                        </div>
+                        <button type="submit" class="btn">投票を作成</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 フルオンチェーンNFTオークション＆投票サービス</p>
+        <div class="network-info">
+            <span id="network-name">ネットワーク: 未接続</span>
+            <span id="gas-price">ガス価格: -- Gwei</span>
+        </div>
+    </footer>
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="js/web3.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

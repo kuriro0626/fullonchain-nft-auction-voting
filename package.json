@@ -1,0 +1,28 @@
+{
+  "name": "wily-front",
+  "version": "1.0.0",
+  "description": "Wilyサービス（フルオンチェーンNFTオークション＆投票サービス）のフロントエンド",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve .",
+    "build": "node scripts/build-onchain.js"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "arbitrum",
+    "nft",
+    "auction",
+    "voting",
+    "fullonchain",
+    "frontend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0",
+    "html-minifier": "^4.0.0",
+    "clean-css": "^5.3.0",
+    "uglify-js": "^3.17.0"
+  }
+}
